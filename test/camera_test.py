@@ -1,23 +1,25 @@
 #coding:utf-8
 import sys
+import sys
 sys.path.append('..')
 from Detection.MtcnnDetector import MtcnnDetector
 from Detection.detector import Detector
 from Detection.fcn_detector import FcnDetector
 from train_models.mtcnn_model import P_Net, R_Net, O_Net
 import cv2
+from scipy.misc import imresize
 import numpy as np
 
 test_mode = "onet"
 thresh = [0.9, 0.6, 0.7]
-min_face_size = 24
+min_face_size = 50
 stride = 2
 slide_window = False
 shuffle = False
 #vis = True
 detectors = [None, None, None]
-prefix = ['../data/MTCNN_model/PNet_landmark/PNet', '../data/MTCNN_model/RNet_landmark/RNet', '../data/MTCNN_model/ONet_landmark/ONet']
-epoch = [18, 14, 16]
+prefix = ['../data/MTCNN_model/20180213(60)/PNet_landmark/', '../data/MTCNN_model/20180213(60)/RNet_landmark/', '../data/MTCNN_model/20180213(60)/ONet_landmark/']
+epoch = [30, 22, 22]
 model_path = ['%s-%s' % (x, y) for x, y in zip(prefix, epoch)]
 PNet = FcnDetector(P_Net, model_path[0])
 detectors[0] = PNet
@@ -30,18 +32,23 @@ mtcnn_detector = MtcnnDetector(detectors=detectors, min_face_size=min_face_size,
                                stride=stride, threshold=thresh, slide_window=slide_window)
 
 video_capture = cv2.VideoCapture(videopath)
-video_capture.set(3, 340)
-video_capture.set(4, 480)
+#video_capture.set(3, 24)
+#video_capture.set(4, 23)
+
+#video_capture.set(3, 320);
+#video_capture.set(4, 240);
 corpbbox = None
 while True:
     # fps = video_capture.get(cv2.CAP_PROP_FPS)
     t1 = cv2.getTickCount()
     ret, frame = video_capture.read()
+    frame = imresize(frame, (480,640))
+
+    print(frame.shape)
     if ret:
         image = np.array(frame)
         boxes_c,landmarks = mtcnn_detector.detect(image)
         
-        print landmarks.shape
         t2 = cv2.getTickCount()
         t = (t2 - t1) / cv2.getTickFrequency()
         fps = 1.0 / t
