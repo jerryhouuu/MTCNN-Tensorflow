@@ -62,6 +62,7 @@ def run(dataset_dir, net, output_dir, name='MTCNN', shuffling=False):
             sys.stdout.flush()
             filename = image_example['filename']
             _add_to_tfrecord(filename, image_example, tfrecord_writer)
+    tfrecord_writer.close()
     # Finally, write the labels file:
     # labels_to_class_names = dict(zip(range(len(_CLASS_NAMES)), _CLASS_NAMES))
     # dataset_utils.write_label_file(labels_to_class_names, dataset_dir)
@@ -95,13 +96,15 @@ def get_dataset(dir, net='PNet'):
         bbox['xleftmouth'] = 0
         bbox['yleftmouth'] = 0
         bbox['xrightmouth'] = 0
-        bbox['yrightmouth'] = 0        
+        bbox['yrightmouth'] = 0
+        bbox['xchin'] = 0
+        bbox['ychin'] = 0           
         if len(info) == 6:
             bbox['xmin'] = float(info[2])
             bbox['ymin'] = float(info[3])
             bbox['xmax'] = float(info[4])
             bbox['ymax'] = float(info[5])
-        if len(info) == 12:
+        if len(info) == 14:
             bbox['xlefteye'] = float(info[2])
             bbox['ylefteye'] = float(info[3])
             bbox['xrighteye'] = float(info[4])
@@ -112,6 +115,8 @@ def get_dataset(dir, net='PNet'):
             bbox['yleftmouth'] = float(info[9])
             bbox['xrightmouth'] = float(info[10])
             bbox['yrightmouth'] = float(info[11])
+            bbox['xchin'] = float(info[12])
+            bbox['ychin'] = float(info[13])
             
         data_example['bbox'] = bbox
         dataset.append(data_example)

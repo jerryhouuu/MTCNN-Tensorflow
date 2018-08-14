@@ -47,6 +47,7 @@ def getDataFromTxt(txt, with_landmark=True):
     for line in lines:
         line = line.strip()
         components = line.split(' ')
+        print(components)
         img_path = os.path.join(dirname, components[0]) # file path
         # bounding box, (x1, y1, x2, y2)
         #bbox = (components[1], components[2], components[3], components[4])
@@ -57,8 +58,8 @@ def getDataFromTxt(txt, with_landmark=True):
         if not with_landmark:
             result.append((img_path, BBox(bbox)))
             continue
-        landmark = np.zeros((5, 2))
-        for index in range(0, 5):
+        landmark = np.zeros((6, 2))
+        for index in range(0, 6):
             rv = (float(components[5+2*index]), float(components[5+2*index+1]))
             landmark[index] = rv
         #normalize

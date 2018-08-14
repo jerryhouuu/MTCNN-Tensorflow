@@ -17,7 +17,7 @@ from utils import *
 from data_utils import *
 #net : 24(RNet)/48(ONet)
 #data: dict()
-def save_hard_example(net, data,save_path):
+def save_hard_example(net, data, save_path):
     # load ground truth from annotation file
     # format of each line: image/path [x1,y1,x2,y2] for each gt_box in this image
 
@@ -192,7 +192,7 @@ def parse_args():
                         default=['../data/MTCNN_model/PNet_landmark/PNet', '../data/MTCNN_model/RNet_landmark/RNet', '../data/MTCNN_model/ONet/ONet'],
                         type=str)
     parser.add_argument('--epoch', dest='epoch', help='epoch number of model to load', nargs="+",
-                        default=[18, 14, 22], type=int)
+                        default=[30, 22, 22], type=int)
     parser.add_argument('--batch_size', dest='batch_size', help='list of batch size used in prediction', nargs="+",
                         default=[2048, 256, 16], type=int)
     parser.add_argument('--thresh', dest='thresh', help='list of thresh for pnet, rnet, onet', nargs="+",

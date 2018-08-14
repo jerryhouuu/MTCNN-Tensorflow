@@ -58,7 +58,7 @@ def randomShift(landmarkGt, shift):
     """
         Random Shift one time
     """
-    diff = np.random.rand(5, 2)
+    diff = np.random.rand(6, 2)
     diff = (2*diff - 1) * shift
     landmarkP = landmarkGt + diff
     return landmarkP
@@ -68,7 +68,7 @@ def randomShiftWithArgument(landmarkGt, shift):
         Random Shift more
     """
     N = 2
-    landmarkPs = np.zeros((N, 5, 2))
+    landmarkPs = np.zeros((N, 6, 2))
     for i in range(N):
         landmarkPs[i] = randomShift(landmarkGt, shift)
     return landmarkPs

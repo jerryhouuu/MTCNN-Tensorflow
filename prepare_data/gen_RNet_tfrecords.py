@@ -31,7 +31,7 @@ def _get_output_filename(output_dir, name, net):
     #st = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     #return '%s/%s_%s_%s.tfrecord' % (output_dir, name, net, st)
     #return '%s/train_PNet_landmark.tfrecord' % (output_dir)
-    return '%s/landmark_landmark.tfrecord' % (output_dir)
+    return '%s/pos_landmark.tfrecord' % (output_dir)
     
 
 def run(dataset_dir, net, output_dir, name='MTCNN', shuffling=False):
@@ -57,12 +57,14 @@ def run(dataset_dir, net, output_dir, name='MTCNN', shuffling=False):
     # Process dataset files.
     # write the data to tfrecord
     print 'lala'
+    print(tf_filename)
     with tf.python_io.TFRecordWriter(tf_filename) as tfrecord_writer:
         for i, image_example in enumerate(dataset):
             sys.stdout.write('\r>> Converting image %d/%d' % (i + 1, len(dataset)))
             sys.stdout.flush()
             filename = image_example['filename']
             _add_to_tfrecord(filename, image_example, tfrecord_writer)
+    tfrecord_writer.close()
     # Finally, write the labels file:
     # labels_to_class_names = dict(zip(range(len(_CLASS_NAMES)), _CLASS_NAMES))
     # dataset_utils.write_label_file(labels_to_class_names, dataset_dir)
@@ -72,7 +74,11 @@ def run(dataset_dir, net, output_dir, name='MTCNN', shuffling=False):
 def get_dataset(dir, net='PNet'):
     #item = 'imglists/PNet/train_%s_raw.txt' % net
     #item = 'imglists/PNet/train_%s_landmark.txt' % net
-    item = '%s/landmark_%s_aug.txt' % (net,net)
+
+    # item = '%s/landmark_%s_aug.txt' % (net,net)
+    # item = '%s/neg_%s.txt' % (net,net)
+    item = '%s/pos_%s.txt' % (net,net)
+    # item = '%s/part_%s.txt' % (net,net)
     print item 
     dataset_dir = os.path.join(dir, item)
     imagelist = open(dataset_dir, 'r')
@@ -97,13 +103,15 @@ def get_dataset(dir, net='PNet'):
         bbox['xleftmouth'] = 0
         bbox['yleftmouth'] = 0
         bbox['xrightmouth'] = 0
-        bbox['yrightmouth'] = 0        
+        bbox['yrightmouth'] = 0
+        bbox['xchin'] = 0
+        bbox['ychin'] = 0        
         if len(info) == 6:
             bbox['xmin'] = float(info[2])
             bbox['ymin'] = float(info[3])
             bbox['xmax'] = float(info[4])
             bbox['ymax'] = float(info[5])
-        if len(info) == 12:
+        if len(info) == 14:
             bbox['xlefteye'] = float(info[2])
             bbox['ylefteye'] = float(info[3])
             bbox['xrighteye'] = float(info[4])
@@ -114,6 +122,8 @@ def get_dataset(dir, net='PNet'):
             bbox['yleftmouth'] = float(info[9])
             bbox['xrightmouth'] = float(info[10])
             bbox['yrightmouth'] = float(info[11])
+            bbox['xchin'] = float(info[12])
+            bbox['ychin'] = float(info[13])
             
         data_example['bbox'] = bbox
         dataset.append(data_example)

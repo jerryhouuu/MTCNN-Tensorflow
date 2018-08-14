@@ -62,24 +62,25 @@ def GenerateData(ftxt, output,net,argument=False):
     idx = 0
     #image_path bbox landmark(5*2)
     for (imgPath, bbox, landmarkGt) in data:
-        #print imgPath
+        # print imgPath
         F_imgs = []
         F_landmarks = []        
         img = cv2.imread(imgPath)
+        # print(os.path.isfile('lfw_5590/Aaron_Eckhart_0001.jpg'))
         assert(img is not None)
         img_h,img_w,img_c = img.shape
         gt_box = np.array([bbox.left,bbox.top,bbox.right,bbox.bottom])
         f_face = img[bbox.top:bbox.bottom+1,bbox.left:bbox.right+1]
         f_face = cv2.resize(f_face,(size,size))
-        landmark = np.zeros((5, 2))
+        landmark = np.zeros((6, 2))
         #normalize
         for index, one in enumerate(landmarkGt):
             rv = ((one[0]-gt_box[0])/(gt_box[2]-gt_box[0]), (one[1]-gt_box[1])/(gt_box[3]-gt_box[1]))
             landmark[index] = rv
         
         F_imgs.append(f_face)
-        F_landmarks.append(landmark.reshape(10))
-        landmark = np.zeros((5, 2))        
+        F_landmarks.append(landmark.reshape(12))
+        landmark = np.zeros((6, 2))        
         if argument:
             idx = idx + 1
             if idx % 100 == 0:
@@ -114,8 +115,8 @@ def GenerateData(ftxt, output,net,argument=False):
                     for index, one in enumerate(landmarkGt):
                         rv = ((one[0]-nx1)/bbox_size, (one[1]-ny1)/bbox_size)
                         landmark[index] = rv
-                    F_landmarks.append(landmark.reshape(10))
-                    landmark = np.zeros((5, 2))
+                    F_landmarks.append(landmark.reshape(12))
+                    landmark = np.zeros((6, 2))
                     landmark_ = F_landmarks[-1].reshape(-1,2)
                     bbox = BBox([nx1,ny1,nx2,ny2])                    
 
@@ -125,36 +126,42 @@ def GenerateData(ftxt, output,net,argument=False):
                         face_flipped = cv2.resize(face_flipped, (size, size))
                         #c*h*w
                         F_imgs.append(face_flipped)
-                        F_landmarks.append(landmark_flipped.reshape(10))
+                        F_landmarks.append(landmark_flipped.reshape(12))
                     #rotate
                     if random.choice([0,1]) > 0:
+                        rotate_alpha = random.randint(5,60)
+                        # face_rotated_by_alpha, landmark_rotated = rotate(img, bbox, \
+                        #                                                  bbox.reprojectLandmark(landmark_), 5)#逆时针旋转
                         face_rotated_by_alpha, landmark_rotated = rotate(img, bbox, \
-                                                                         bbox.reprojectLandmark(landmark_), 5)#逆时针旋转
+                                                                         bbox.reprojectLandmark(landmark_), rotate_alpha)#逆时针旋转
                         #landmark_offset
                         landmark_rotated = bbox.projectLandmark(landmark_rotated)
                         face_rotated_by_alpha = cv2.resize(face_rotated_by_alpha, (size, size))
                         F_imgs.append(face_rotated_by_alpha)
-                        F_landmarks.append(landmark_rotated.reshape(10))
+                        F_landmarks.append(landmark_rotated.reshape(12))
                 
                         #flip
                         face_flipped, landmark_flipped = flip(face_rotated_by_alpha, landmark_rotated)
                         face_flipped = cv2.resize(face_flipped, (size, size))
                         F_imgs.append(face_flipped)
-                        F_landmarks.append(landmark_flipped.reshape(10))                
+                        F_landmarks.append(landmark_flipped.reshape(12))                
                     
                     #inverse clockwise rotation
                     if random.choice([0,1]) > 0: 
+                        rotate_alpha = -random.randint(5,60)
+                        # face_rotated_by_alpha, landmark_rotated = rotate(img, bbox, \
+                        #                                                  bbox.reprojectLandmark(landmark_), -5)#顺时针旋转
                         face_rotated_by_alpha, landmark_rotated = rotate(img, bbox, \
-                                                                         bbox.reprojectLandmark(landmark_), -5)#顺时针旋转
+                                                                         bbox.reprojectLandmark(landmark_), rotate_alpha)#顺时针旋转
                         landmark_rotated = bbox.projectLandmark(landmark_rotated)
                         face_rotated_by_alpha = cv2.resize(face_rotated_by_alpha, (size, size))
                         F_imgs.append(face_rotated_by_alpha)
-                        F_landmarks.append(landmark_rotated.reshape(10))
+                        F_landmarks.append(landmark_rotated.reshape(12))
                 
                         face_flipped, landmark_flipped = flip(face_rotated_by_alpha, landmark_rotated)
                         face_flipped = cv2.resize(face_flipped, (size, size))
                         F_imgs.append(face_flipped)
-                        F_landmarks.append(landmark_flipped.reshape(10)) 
+                        F_landmarks.append(landmark_flipped.reshape(12)) 
                     
             F_imgs, F_landmarks = np.asarray(F_imgs), np.asarray(F_landmarks)
             #print F_imgs.shape
