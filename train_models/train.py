@@ -141,7 +141,7 @@ def train(net_factory, prefix, end_epoch, base_dir,
     input_image = tf.placeholder(tf.float32, shape=[config.BATCH_SIZE, image_size, image_size, 3], name='input_image')
     label = tf.placeholder(tf.float32, shape=[config.BATCH_SIZE], name='label')
     bbox_target = tf.placeholder(tf.float32, shape=[config.BATCH_SIZE, 4], name='bbox_target')
-    landmark_target = tf.placeholder(tf.float32,shape=[config.BATCH_SIZE,10],name='landmark_target')
+    landmark_target = tf.placeholder(tf.float32,shape=[config.BATCH_SIZE,12],name='landmark_target')
     #class,regression
     cls_loss_op,bbox_loss_op,landmark_loss_op,L2_loss_op,accuracy_op = net_factory(input_image, label, bbox_target,landmark_target,training=True)
     #train,update learning rate(3 loss)
